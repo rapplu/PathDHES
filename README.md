@@ -12,7 +12,7 @@ First clone the repository. A list of dependancies can be found in ``requirement
 Before running the code, create the following directories in which the databases and results will be stored:
 ```
 mkdir databases
-mkdir mkdir databases/PathGES-databases
+mkdir databases/PathGES-databases
 mkdir results
 mkdir results/PathGES-Results
 ```
@@ -27,7 +27,7 @@ where DATA specifies the graph dataset to encrypt, SETUP-FlAG specifies whether 
 
 To run experiments for the GKT scheme (Ghosh et al. AsiaCCS 2022) first create the following directories:
 ```
-mkdir mkdir databases/GKT-databases
+mkdir databases/GKT-databases
 mkdir results/GKT-Results
 ```
 
