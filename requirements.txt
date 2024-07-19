@@ -1,0 +1,6 @@
+cffi==1.16.0
+cryptography==42.0.8
+networkx==3.3
+numpy==2.0.0
+pycparser==2.22
+tqdm==4.66.4
