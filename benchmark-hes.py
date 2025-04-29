@@ -94,6 +94,10 @@ def run_benchmarks(H):
             total_length = sum((len(fragment) for fragment in path))
             print(path)
 
+            # Combine paths:
+            for p in path:
+                print(p)
+
             # todo: check if solution is correct.
 
             # if  source in paths:
