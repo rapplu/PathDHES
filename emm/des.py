@@ -44,11 +44,14 @@ class DESclass:
         Given database files DX_db and EDX_db, encrypt contents of DX_db and write to EDX_db.
         """
         total_chunks = ceil(get_row_count(DX_db)/CHUNK_SIZE)
-        with concurrent.futures.ProcessPoolExecutor(max_workers=num_cores) as executor:
-            for partial_edx in tqdm(executor.map(
-                    self.encrypt_helper, read_data_streaming(DX_db, CHUNK_SIZE), 
-                        ), total=total_chunks, desc="Encrypting with EMM-RR"):
-                write_dict_to_sqlite(partial_edx, EDX_db_conn)
+        # with concurrent.futures.ProcessPoolExecutor(max_workers=num_cores) as executor:
+        #     for partial_edx in tqdm(executor.map(
+        #             self.encrypt_helper, read_data_streaming(DX_db, CHUNK_SIZE),
+        #                 ), total=total_chunks, desc="Encrypting with EMM-RR"):
+        #         write_dict_to_sqlite(partial_edx, EDX_db_conn)
+        for stream in read_data_streaming(DX_db, CHUNK_SIZE):
+            partial_edx = self.encrypt_helper(stream)
+            write_dict_to_sqlite(partial_edx, EDX_db_conn)
 
 
     def token(self, key: bytes, label: bytes) -> bytes:

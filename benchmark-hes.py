@@ -5,7 +5,10 @@ import sys
 import time
 from tqdm import tqdm
 import csv
-from ges import OurGES
+from hes import OurHES
+
+from halp.directed_hypergraph import DirectedHypergraph
+from halp.algorithms.directed_paths import shortest_b_tree
 
 dataset=sys.argv[1]
 SETUP_FLAG=int(sys.argv[2])     # If 0 won't run setup experiments.
@@ -19,7 +22,7 @@ def generate_random_query(num_nodes):
         v2 = secrets.randbelow(num_nodes)
     return v1, v2
 
-def run_benchmarks(G):
+def run_benchmarks(H):
 
     setup_results = []
     query_results = []
@@ -27,8 +30,8 @@ def run_benchmarks(G):
     if bool(SETUP_FLAG):
 
         # Measure time to encrypt graph.
-        time_to_gen_key = GES.key_gen(16)
-        EM1_db, EM2_db, EM1_file, EM2_file, M1_file, M2_file, time_to_compute_MMs, encryption_time = GES.encrypt_graph(G)
+        time_to_gen_key = HES.key_gen(16)
+        EM1_db, EM2_db, EM1_file, EM2_file, M1_file, M2_file, time_to_compute_MMs, encryption_time = HES.encrypt_graph(H)
         total_setup_time = time_to_gen_key + time_to_compute_MMs + encryption_time
 
         print("Setup time (ms): ", total_setup_time// 1000000)
@@ -53,23 +56,26 @@ def run_benchmarks(G):
 
     if bool(NUM_QUERIES):
         
-        GES.retrieve_key()
+        HES.retrieve_key()
 
         print("Running query benchmarks...")
         for _ in tqdm(range(NUM_QUERIES)):
+            # source, target = generate_random_query(NUM_NODES)
+            source = 7
+            target = 1
 
-            source, target = generate_random_query(NUM_NODES)
-            paths = nx.single_source_shortest_path(G, target)
+            mapping, weight_dict = shortest_b_tree(H, target)
+            # paths = nx.single_source_shortest_path(H, target)
 
             # Measure token generation time.
             t0 = time.time_ns()
-            tk = GES.compute_token((source, target))
+            tk = HES.compute_token((source, target))
             t1 = time.time_ns()
             token_gen_time = t1 - t0
             
             # Measure search time.
             t0 = time.time_ns()        
-            resp = GES.search(tk)
+            resp = HES.search(tk)
             t1 = time.time_ns()
             search_time = t1 - t0
 
@@ -81,45 +87,61 @@ def run_benchmarks(G):
 
             # Measure time to decrypt path.
             t0 = time.time_ns()
-            path = GES.reveal(resp)
+            path = HES.reveal(resp)
             t1 = time.time_ns()
             reveal_time = t1 - t0
             # Compute percent padding.
             total_length = sum((len(fragment) for fragment in path))
 
-            if source in paths:
-                true_path = paths[source]
-            else:
-                true_path = []
+            # todo: check if solution is correct.
 
-            if path != []:
-                true_length = len(true_path)-1
-                total_padding = total_length - true_length
-                percent_padding = ((total_length-true_length) / total_length) * 100
-            else:
-                true_length = 0
-                total_padding = 0
-                percent_padding = 0
-
-            plaintext_path_bytes = sys.getsizeof(path)
-
-            total_query_time = token_gen_time + search_time + reveal_time
-            
-            query_results.append([token_gen_time, search_time, reveal_time, total_query_time,
-                                  true_length, number_of_fragments, total_padding,
-                                  percent_padding, resp_size, plaintext_path_bytes])
+            # if  source in paths:
+            #     true_path = paths[source]
+            # else:
+            #     true_path = []
+            #
+            # if path != []:
+            #     true_length = len(true_path)-1
+            #     total_padding = total_length - true_length
+            #     percent_padding = ((total_length-true_length) / total_length) * 100
+            # else:
+            #     true_length = 0
+            #     total_padding = 0
+            #     percent_padding = 0
+            #
+            # plaintext_path_bytes = sys.getsizeof(path)
+            #
+            # total_query_time = token_gen_time + search_time + reveal_time
+            #
+            # query_results.append([token_gen_time, search_time, reveal_time, total_query_time,
+            #                       true_length, number_of_fragments, total_padding,
+            #                       percent_padding, resp_size, plaintext_path_bytes])
 
             
     return setup_results, query_results
 
 if __name__ == "__main__":
-    G = extract_graph(dataset)
-    G = nx.convert_node_labels_to_integers(G, first_label=0, ordering='default', label_attribute=None)
+    # todo: Replace with actual datasets.
+    H = DirectedHypergraph()
+    H.add_hyperedge([1], [2])
+    H.add_hyperedge([1], [3])
+    H.add_hyperedge([2, 3], [4])
+    H.add_hyperedge([1], [5])
+    H.add_hyperedge([4, 5], [6])
+    H.add_hyperedge([6], [7])
 
-    NUM_NODES = len(G.nodes())
-    GES = OurGES(dataset, NUM_PROCESSES)
+
+    # ----
+    nodes = list(H.node_iterator())
+
+    # G = nx.convert_node_labels_to_integers(G, first_label=0, ordering='default', label_attribute=None)
+    # I don't think we need integer labels but just be sure:
+    assert all([type(a) is int for a in nodes])
+
+    NUM_NODES = len(nodes)
+    HES = OurHES(dataset, NUM_PROCESSES)
     
-    setup_results, query_results = run_benchmarks(G)
+    setup_results, query_results = run_benchmarks(H)
 
     if bool(SETUP_FLAG):
         setup_csv = "results/PathGES-Results/PathGES-" + dataset + "-setup.csv"

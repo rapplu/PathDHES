@@ -228,7 +228,7 @@ def build_mm_helper(params):
                     prev_query = str((v,root)).encode('utf-8')
                             
                     if prev_query in partial_M1:
-                        partial_M1[label_query] = partial_M1[prev_query]+ [tk]
+                        partial_M1[label_query] = partial_M1[prev_query] + [tk]
                         shuffle(partial_M1[label_query])
                     else:
                         partial_M1[label_query] = [tk]

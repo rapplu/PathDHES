@@ -51,10 +51,13 @@ class EMMclass:
         """
         total_chunks = ceil(get_row_count(MM_db)/CHUNK_SIZE)
         # Read data from source database in chunks and encrypt
-        with concurrent.futures.ProcessPoolExecutor(max_workers=num_cores) as executor:
-            for partial_emm in tqdm(executor.map(
-                    self.encrypt_data, read_data_streaming(MM_db, CHUNK_SIZE)), total=total_chunks, desc="Encrypting with EMM-RH"):
-                write_dict_to_sqlite(partial_emm, EMM_db)
+        # with concurrent.futures.ProcessPoolExecutor(max_workers=num_cores) as executor:
+        #     for partial_emm in tqdm(executor.map(
+        #             self.encrypt_data, read_data_streaming(MM_db, CHUNK_SIZE)), total=total_chunks, desc="Encrypting with EMM-RH"):
+        #         write_dict_to_sqlite(partial_emm, EMM_db)
+        for stream in read_data_streaming(MM_db, CHUNK_SIZE):
+            partial_emm = self.encrypt_data(stream)
+            write_dict_to_sqlite(partial_emm, EMM_db)
 
 
     def token(self, key, label):
