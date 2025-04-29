@@ -65,11 +65,20 @@ class OurHES:
         """
         self.M1_db = initialize_database(self.M1_file)
         self.M2_db = initialize_database(self.M2_file)
-        self.EM1_db = initialize_database(self.EM1_file )
+        self.EM1_db = initialize_database(self.EM1_file)
         self.EM2_db = initialize_database(self.EM2_file)
+
+        # debug
+        # DES.build_index(self.M1_db, self.EM1_db, self.num_cores)
 
         self.H = H
         NUM_NODES = len(list(H.node_iterator()))
+        NUM_NODES_PLUS_HELPER = 0
+        for node in H.node_iterator():
+            tail_size_list = [len(H.get_hyperedge_tail(e)) for e in H.get_backward_star(node)]
+            NUM_NODES_PLUS_HELPER += 1
+            if len(tail_size_list) > 0 and max(tail_size_list) > 1:
+                NUM_NODES_PLUS_HELPER += max(tail_size_list)
 
         total_num_edges_in_M2 = 0
         t0 = time.time_ns()  
@@ -86,7 +95,6 @@ class OurHES:
 
         for g in nodes:
             partial_M1, partial_M2, num_edges_in_M2 = build_mm_helper((g, self.H, self.key_EMM))
-
             total_num_edges_in_M2 += num_edges_in_M2
             write_dict_to_sqlite(partial_M1, self.M1_db)
             write_dict_to_sqlite(partial_M2, self.M2_db)
@@ -94,26 +102,26 @@ class OurHES:
 
         # Pad M1 up to worst case multimap size
         total_num_labels_in_M1 = get_row_count(self.M1_db)   
-        num_pad_M1 = NUM_NODES*(NUM_NODES-1) - total_num_labels_in_M1
+        num_pad_M1 = NUM_NODES_PLUS_HELPER*(NUM_NODES_PLUS_HELPER-1) - total_num_labels_in_M1
         # with concurrent.futures.ProcessPoolExecutor(max_workers=self.num_cores) as executor:
         #     for padded_M1 in tqdm(executor.map(
         #            padding_M1_helper, ((chunk, NUM_NODES) for chunk in chunks(num_pad_M1, CHUNK_SIZE))),
         #                     total=ceil(num_pad_M1/CHUNK_SIZE), desc="Padding M1"):
         #         write_dict_to_sqlite(padded_M1, self.M1_db)
-        for chunk in chunks(num_pad_M1, CHUNK_SIZE):
-            padded_M1 = padding_M1_helper((chunk, NUM_NODES))
-            write_dict_to_sqlite(padded_M1, self.M1_db)
+        # for chunk in chunks(num_pad_M1, CHUNK_SIZE):
+        #     padded_M1 = padding_M1_helper((chunk, NUM_NODES_PLUS_HELPER))
+        #     write_dict_to_sqlite(padded_M1, self.M1_db)
      
         # Pad M2 up to worst case multimap size 4*(NUM_NODES)^2
-        num_pad_M2 = 4*(NUM_NODES)**2 - total_num_edges_in_M2
+        num_pad_M2 = 4*(NUM_NODES_PLUS_HELPER)**2 - total_num_edges_in_M2
         # with concurrent.futures.ProcessPoolExecutor(max_workers=self.num_cores) as executor:
         #     for padded_M2 in tqdm(executor.map(
         #             padding_M2_helper, chunks(num_pad_M2, CHUNK_SIZE)),
         #                     total=ceil(num_pad_M2/CHUNK_SIZE), desc="Padding M2"):
         #         write_dict_to_sqlite(padded_M2, self.M2_db)
-        for chunk in chunks(num_pad_M2, CHUNK_SIZE):
-            padded_M2 = padding_M2_helper((chunk, NUM_NODES))
-            write_dict_to_sqlite(padded_M2, self.M2_db)
+        # for chunk in chunks(num_pad_M2, CHUNK_SIZE):
+        #     padded_M2 = padding_M2_helper((chunk, NUM_NODES_PLUS_HELPER))
+        #     write_dict_to_sqlite(padded_M2, self.M2_db)
 
         t1 = time.time_ns()  
         time_to_compute_MMs = t1 - t0
@@ -217,7 +225,7 @@ def extract_trees(H, root):
 
         tail_vertex_id_list = H.get_hyperedge_tail(hyperedge_id)
 
-        print(vertex_id, tail_vertex_id_list)
+        # print(vertex_id, tail_vertex_id_list)
 
         # todo: think about this case again.
         # probably cannot happen anyway.
@@ -357,6 +365,7 @@ def build_mm_helper(params):
                                 shuffle(partial_M1[label_query])
 
     # Pad each list of values in M1 up to log2(len(NUM_NODES))
+    # todo: This padding might be incorrect because we have more nodes.
     nodes = list(H.node_iterator())
     pad_len = ceil(log2(len(nodes)))
     padded_M1 = {label: [b''.join(values + [b"0"*16] * (pad_len - len(values)))]
@@ -369,10 +378,10 @@ def padding_M1_helper(params):
     """
     A helper function used to parallelize padding multimap M1.  
     """
-    indices, NUM_NODES = params
+    indices, NUM_NODES_PLUS_HELPER = params
     temp = {}
     for i in indices:
-        temp[str((i)).encode('utf-8')] = [b''.join([b"0"*16] * ceil(log2(NUM_NODES)))]
+        temp[str((i)).encode('utf-8')] = [b''.join([b"0"*16] * ceil(log2(NUM_NODES_PLUS_HELPER)))]
     return temp
 
 

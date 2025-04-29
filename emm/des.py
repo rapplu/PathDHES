@@ -50,6 +50,7 @@ class DESclass:
         #                 ), total=total_chunks, desc="Encrypting with EMM-RR"):
         #         write_dict_to_sqlite(partial_edx, EDX_db_conn)
         for stream in read_data_streaming(DX_db, CHUNK_SIZE):
+            print(stream)
             partial_edx = self.encrypt_helper(stream)
             write_dict_to_sqlite(partial_edx, EDX_db_conn)
 

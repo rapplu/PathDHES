@@ -60,7 +60,7 @@ def run_benchmarks(H):
 
         print("Running query benchmarks...")
         for _ in tqdm(range(NUM_QUERIES)):
-            # source, target = generate_random_query(NUM_NODES)
+            source, target = generate_random_query(NUM_NODES)
             source = 7
             target = 1
 
@@ -92,6 +92,7 @@ def run_benchmarks(H):
             reveal_time = t1 - t0
             # Compute percent padding.
             total_length = sum((len(fragment) for fragment in path))
+            print(path)
 
             # todo: check if solution is correct.
 

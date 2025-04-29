@@ -92,6 +92,9 @@ def run_benchmarks(G):
             else:
                 true_path = []
 
+            print(target, source)
+            print(true_path)
+
             if path != []:
                 true_length = len(true_path)-1
                 total_padding = total_length - true_length
@@ -100,6 +103,8 @@ def run_benchmarks(G):
                 true_length = 0
                 total_padding = 0
                 percent_padding = 0
+
+            print(path)
 
             plaintext_path_bytes = sys.getsizeof(path)
 
