@@ -108,9 +108,9 @@ class OurHES:
         #            padding_M1_helper, ((chunk, NUM_NODES) for chunk in chunks(num_pad_M1, CHUNK_SIZE))),
         #                     total=ceil(num_pad_M1/CHUNK_SIZE), desc="Padding M1"):
         #         write_dict_to_sqlite(padded_M1, self.M1_db)
-        # for chunk in chunks(num_pad_M1, CHUNK_SIZE):
-        #     padded_M1 = padding_M1_helper((chunk, NUM_NODES_PLUS_HELPER))
-        #     write_dict_to_sqlite(padded_M1, self.M1_db)
+        for chunk in chunks(num_pad_M1, CHUNK_SIZE):
+            padded_M1 = padding_M1_helper((chunk, NUM_NODES_PLUS_HELPER))
+            write_dict_to_sqlite(padded_M1, self.M1_db)
      
         # Pad M2 up to worst case multimap size 4*(NUM_NODES)^2
         num_pad_M2 = 4*(NUM_NODES_PLUS_HELPER)**2 - total_num_edges_in_M2
@@ -119,9 +119,9 @@ class OurHES:
         #             padding_M2_helper, chunks(num_pad_M2, CHUNK_SIZE)),
         #                     total=ceil(num_pad_M2/CHUNK_SIZE), desc="Padding M2"):
         #         write_dict_to_sqlite(padded_M2, self.M2_db)
-        # for chunk in chunks(num_pad_M2, CHUNK_SIZE):
-        #     padded_M2 = padding_M2_helper((chunk, NUM_NODES_PLUS_HELPER))
-        #     write_dict_to_sqlite(padded_M2, self.M2_db)
+        for chunk in chunks(num_pad_M2, CHUNK_SIZE):
+            padded_M2 = padding_M2_helper((chunk, NUM_NODES_PLUS_HELPER))
+            write_dict_to_sqlite(padded_M2, self.M2_db)
 
         t1 = time.time_ns()  
         time_to_compute_MMs = t1 - t0
