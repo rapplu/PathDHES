@@ -1,0 +1,15 @@
+# H.add_hyperedge([1], [2, 3]) #, label="E1")
+# H.add_hyperedge([2], [4, 5]) #, label="E2")
+# H.add_hyperedge([3, 2], [6, 7]) #, label="E3")
+# H.add_hyperedge([5, 6], [10]) #, label="E4")
+# H.add_hyperedge([8, 9, 10], [4]) #, label="E5")
+# H.add_hyperedge([11], [12]) #, label="E6")
+# H.add_hyperedge([12, 13], [11]) #, label="E7")
+
+1;2,3;
+2;4,5;
+3,2;6,7;
+5,6;10;
+8,9,10;4;
+11;12;
+12,13;11;
