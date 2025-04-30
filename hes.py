@@ -261,6 +261,3 @@ def padding_M2_helper(indices):
     for i in indices:
         temp[str((i)).encode('utf-8')] = [b"p"]
     return temp
-
-dataset = 'hypergraph-dummy'
-breakpoint()

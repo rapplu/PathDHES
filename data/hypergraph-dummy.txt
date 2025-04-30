@@ -1,15 +1,15 @@
-# H.add_hyperedge([1], [2, 3]) #, label="E1")
-# H.add_hyperedge([2], [4, 5]) #, label="E2")
-# H.add_hyperedge([3, 2], [6, 7]) #, label="E3")
-# H.add_hyperedge([5, 6], [10]) #, label="E4")
-# H.add_hyperedge([8, 9, 10], [4]) #, label="E5")
-# H.add_hyperedge([11], [12]) #, label="E6")
-# H.add_hyperedge([12, 13], [11]) #, label="E7")
+# H.add_hyperedge([0], [1, 2]) #, label="E1")
+# H.add_hyperedge([1], [3, 4]) #, label="E2")
+# H.add_hyperedge([2, 1], [5, 6]) #, label="E3")
+# H.add_hyperedge([4, 5], [9]) #, label="E4")
+# H.add_hyperedge([7, 8, 9], [3]) #, label="E5")
+# H.add_hyperedge([10], [11]) #, label="E6")
+# H.add_hyperedge([11, 12], [10]) #, label="E7")
 
-1;2,3;
-2;4,5;
-3,2;6,7;
-5,6;10;
-8,9,10;4;
-11;12;
-12,13;11;
+0;1,2;
+1;3,4;
+2,1;5,6;
+4,5;9;
+7,8,9;3;
+10;11;
+11,12;10;
