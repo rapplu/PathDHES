@@ -1,3 +1,15 @@
+# PathHES Functionality
+If you wish to run a general B-Path query, just run the following:
+```
+python3 query-bpath.py DATA SOURCE TARGET SETUP-FLAG NUM-CORES
+```
+Similarly, for a Direct Path query, just run:
+```
+python3 query-directpath.py DATA SOURCE TARGET SETUP-FLAG NUM-CORES
+```
+Note that the hypergraph data is stored using zero-indexing, unlike most of the examples included in previous notebooks, so keep that in mind when choosing a SOURCE node and a TARGET node. Moreover, if running a query on a dataset you already use, make sure to make SETUP-FLAG false in order to avoid issues in how the files are stored (currently, it seems like they don't get overwritten).
+
+
 # PathGES: An Efficient and Secure Graph Encryption Scheme for Shortest Path Queries
 
 This is the associated artifact for the paper "PathGES: An Efficient and Secure Graph Encryption Scheme for Shortest Path Queries" by Francesca Falzon, Esha Ghosh, Kenneth G. Paterson, and Roberto Tamassia.

@@ -19,6 +19,26 @@ def int_to_bytes(x: int) -> bytes:
     return str_val.encode()
 
 
+def encode_val(val):
+    if type(val) == int:
+        return str(val).encode('utf-8')
+    elif type(val) == str:
+        return val.encode('utf-8')
+    
+
+def calc_value_edges(fragment_bytes, num_edges_in_M2):
+    value_edges = b""
+    for index in range(len(fragment_bytes) - 1):
+        if value_edges == b"":
+            value_edges = fragment_bytes[index] + b";" + fragment_bytes[index + 1]
+            num_edges_in_M2 += 1
+        else:
+            value_edges = value_edges + b"/" + fragment_bytes[index] + b";" + fragment_bytes[index + 1]
+            num_edges_in_M2 += 1
+
+    return value_edges, num_edges_in_M2
+
+
 def next_power_of_2(x):  
     return 0 if x == 0 else (x - 1).bit_length()
 

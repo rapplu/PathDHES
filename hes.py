@@ -7,10 +7,10 @@ import concurrent
 import gc 
 from database import *
 from helper import *
+from hypergraph_helper import *
 from emm.util.crypto import *
 from emm.des import DESclass
 from emm.emm import EMMclass
-from hypergraph_helper import hypergraph_to_tree, extract_hypergraph
 
 PURPOSE_HMAC = "hmac"
 PURPOSE_ENCRYPT = "encryption"
@@ -199,21 +199,10 @@ def build_mm_helper(params):
                     
             fragment_bytes = []
             for node in fragment:
-                if type(node) == int:
-                    fragment_bytes.append(str(node).encode('utf-8'))
-                elif type(node) == str:
-                    fragment_bytes.append(node.encode('utf-8'))
+                fragment_bytes.append(encode_val(node))
 
-            label_fragment = str((root,u,v,j)).encode('utf-8')
-            value_edges = b""
-            for index in range(len(fragment_bytes)-1):
-                if value_edges == b"":
-                    value_edges = fragment_bytes[index]+ b";" + fragment_bytes[index+1]
-                    num_edges_in_M2 += 1
-                else:
-                    value_edges = value_edges + b"/" + fragment_bytes[index]+ b";" + fragment_bytes[index+1]
-                    num_edges_in_M2 += 1
-
+            label_fragment = encode_val(str((root,u,v,j)))
+            value_edges, num_edges_in_M2 = calc_value_edges(fragment_bytes, num_edges_in_M2)   
             partial_M2[label_fragment] = [value_edges]
 
             if j == 0:
@@ -225,8 +214,8 @@ def build_mm_helper(params):
                 if w != 'p':
                     tk = EMM.token(key_EMM, label_fragment)
                                 
-                    label_query = str((w,root)).encode('utf-8')
-                    prev_query = str((v,root)).encode('utf-8')
+                    label_query = encode_val(str((w,root)))
+                    prev_query = encode_val(str((v,root)))
                             
                     if prev_query in partial_M1:
                         partial_M1[label_query] = partial_M1[prev_query]+ [tk]
