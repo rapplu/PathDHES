@@ -43,6 +43,7 @@ Note that the hypergraph data is stored using zero-indexing, unlike most of the 
 so keep that in mind when choosing a SOURCE node and a TARGET node. Moreover, if running a query on a dataset you already 
 use, make sure to make SETUP-FLAG false in order to avoid issues in how the files are stored (currently, it seems like 
 they don't get overwritten).
+
 Either query type works if you wish to run it on regular directed graphs. We do not currently have regular graph datasets in the repository, but if you wish to experiment with your own examples, make sure to format the text files which contain them appropriately: each line of the file should be of the form ``INPUT;OUTPUT;EDGE-WEIGHT;``. If you wish to experiment with your own hypergraph datasets, the format is similar: ``COMMA-SEPARATED-INPUTS;COMMA-SEPARATED-OUTPUTS;HYPEREDGE-WEIGHTS;``.
 
 To run the experiments for PathDHES, run the following commmand from the root directory of the repository. Our experiments can be carried out using the following datasets: ``hypergraph-dummy``, ``simple-hypergraph``, and ``test-hypergraph``. The last dataset is the same as the one contained in [4].
