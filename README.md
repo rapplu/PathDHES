@@ -35,7 +35,7 @@ If you wish to run a general B-Path query, just run the following:
 ```
 python3 query-bpath.py DATA SOURCE TARGET SETUP-FLAG NUM-CORES
 ```
-Similarly, for a Maximum Cost Path query, just run:
+Similarly, for a Distance Path query, just run:
 ```
 python3 query-directpath.py DATA SOURCE TARGET SETUP-FLAG NUM-CORES
 ```
