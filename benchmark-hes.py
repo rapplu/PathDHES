@@ -58,12 +58,13 @@ def run_benchmarks(H):
 
         print("Running query benchmarks...")
         for _ in tqdm(range(NUM_QUERIES)):
-            source, target = generate_random_query(NUM_NODES)
-            tree, _ = hypergraph_to_tree(H, source)
-            if target in tree.nodes():
-                paths = nx.single_source_shortest_path(tree, target)
-            else:
-                paths = []
+            # source, target = generate_random_query(NUM_NODES)
+            source, target = 1, 10
+            # tree, _ = hypergraph_to_tree(H, source)
+            # if target in tree.nodes():
+            #     paths = nx.single_source_shortest_path(tree, target)
+            # else:
+            #     paths = []
 
             # Measure token generation time.
             t0 = time.time_ns()
@@ -90,59 +91,65 @@ def run_benchmarks(H):
             reveal_time = t1 - t0
             # Compute percent padding.
             total_length = sum((len(fragment) for fragment in path))
+            print(path)
 
-            if source in paths:
-                true_path = paths[source]
-            else:
-                true_path = []
+            for p in path:
+                print(p)
 
-            if path != []:
-                true_length = len(true_path)-1
-                total_padding = total_length - true_length
-                percent_padding = ((total_length-true_length) / total_length) * 100
-            else:
-                true_length = 0
-                total_padding = 0
-                percent_padding = 0
+            # if source in paths:
+            #     true_path = paths[source]
+            # else:
+            #     true_path = []
 
-            plaintext_path_bytes = sys.getsizeof(path)
+            # if path != []:
+            #     true_length = len(true_path)-1
+            #     total_padding = total_length - true_length
+            #     percent_padding = ((total_length-true_length) / total_length) * 100
+            # else:
+            #     true_length = 0
+            #     total_padding = 0
+            #     percent_padding = 0
 
-            total_query_time = token_gen_time + search_time + reveal_time
+            # plaintext_path_bytes = sys.getsizeof(path)
+
+            # total_query_time = token_gen_time + search_time + reveal_time
             
-            query_results.append([token_gen_time, search_time, reveal_time, total_query_time,
-                                true_length, number_of_fragments, total_padding,
-                                percent_padding, resp_size, plaintext_path_bytes])
+            # query_results.append([token_gen_time, search_time, reveal_time, total_query_time,
+            #                     true_length, number_of_fragments, total_padding,
+            #                     percent_padding, resp_size, plaintext_path_bytes])
 
             
-    return setup_results, query_results
+    # return setup_results, query_results
 
 if __name__ == "__main__":
     H = extract_hypergraph(dataset)
 
     NUM_NODES = len(H.get_node_set())
     HES = OurHES(dataset, NUM_PROCESSES)
-    
-    setup_results, query_results = run_benchmarks(H)
 
-    if bool(SETUP_FLAG):
-        setup_csv = "results/PathHES-Results/PathHES-" + dataset + "-setup.csv"
-        setup_fields = ["EM1_size (B)", "EM2_size (B)", "M1_size (B)", "M2_size (B)",
-                "time_to_comp_MMs (ns)", "enc_time (ns)", "setup_time (ns)"]
-
-        # Write setup results to csv file.    
-        f1 = open(setup_csv, 'a')
-        csvwriter1 = csv.writer(f1) 
-        csvwriter1.writerow(setup_fields) 
-        csvwriter1.writerows(setup_results)
+    run_benchmarks(H)
     
-    if bool(NUM_QUERIES):
-        query_csv = "results/PathHES-Results/PathHES-" + dataset + "-query.csv"
-        query_fields = ["token_gen_time (ns)", "search_time (ns)", "reveal_time (ns)", "total_query_time (ns)",
-                        "true_length", "number_of_fragments", "total_padding",
-                        "percent_padding", "resp_size (B)", "plaintext_path_bytes(B)"]
+    # setup_results, query_results = run_benchmarks(H)
+
+    # if bool(SETUP_FLAG):
+    #     setup_csv = "results/PathHES-Results/PathHES-" + dataset + "-setup.csv"
+    #     setup_fields = ["EM1_size (B)", "EM2_size (B)", "M1_size (B)", "M2_size (B)",
+    #             "time_to_comp_MMs (ns)", "enc_time (ns)", "setup_time (ns)"]
+
+    #     # Write setup results to csv file.    
+    #     f1 = open(setup_csv, 'a')
+    #     csvwriter1 = csv.writer(f1) 
+    #     csvwriter1.writerow(setup_fields) 
+    #     csvwriter1.writerows(setup_results)
+    
+    # if bool(NUM_QUERIES):
+    #     query_csv = "results/PathHES-Results/PathHES-" + dataset + "-query.csv"
+    #     query_fields = ["token_gen_time (ns)", "search_time (ns)", "reveal_time (ns)", "total_query_time (ns)",
+    #                     "true_length", "number_of_fragments", "total_padding",
+    #                     "percent_padding", "resp_size (B)", "plaintext_path_bytes(B)"]
         
-        # Write query results to csv file.
-        f2 = open(query_csv, 'w')
-        csvwriter2 = csv.writer(f2) 
-        csvwriter2.writerow(query_fields) 
-        csvwriter2.writerows(query_results)
+    #     # Write query results to csv file.
+    #     f2 = open(query_csv, 'w')
+    #     csvwriter2 = csv.writer(f2) 
+    #     csvwriter2.writerow(query_fields) 
+    #     csvwriter2.writerows(query_results)
