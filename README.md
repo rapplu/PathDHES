@@ -1,4 +1,27 @@
-# PathHES Functionality
+# PathDHES: Directed Hypergraph Encryption Scheme for Shortest B-Path Queries
+
+This repository is based on [ffalzon/ges-camera](https://github.com/ffalzon/ges-camera), a graph encryption scheme 
+for private shortest path queries based on the paper "PathGES: An Efficient and Secure Graph Encryption Scheme for Shortest 
+Path Queries" [1] by Francesca Falzon, Esha Ghosh, Kenneth G. Paterson, and Roberto Tamassia.
+This respository extends its core functionalities to support directed 
+hypergraph [2], [3] encryption for private shortest B-path and distance path queries. 
+Hypergraphs are generalizations of standard graphs where edges become hyperedges that contain multiple vertices in its
+and head instead of just one vertex.
+
+[1] Francesca Falzon, Esha Ghosh, Kenneth G Paerson, and Roberto Tamassia. Pathges: An efficient and secure graph 
+encryption scheme for shortest path queries. In Proceedings of the 2024 on ACM SIGSAC Conference on Computer and 
+Communications Security, pages 4047–4061, 2024.
+
+[2] Giorgio Gallo, Giustino Longo, Stefano Pallottino, and Sang Nguyen. Directed hypergraphs and applications. 
+Discrete applied mathematics, 42(2-3):177–201, 1993.
+
+[3] Lars Relund Nielsen, Daniele Pretolani, and K Andersen. A remark on the definition of a b-hyperpath. Department 
+of Operations Research, University of Aarhus, Tech. Rep, 2001.
+
+**Important:** This repository implements several cryptographic primitives (used for research purposes) which 
+should not be used in production.
+
+## PathDHES Functionality
 If you wish to run a general B-Path query, just run the following:
 ```
 python3 query-bpath.py DATA SOURCE TARGET SETUP-FLAG NUM-CORES
@@ -7,14 +30,10 @@ Similarly, for a Direct Path query, just run:
 ```
 python3 query-directpath.py DATA SOURCE TARGET SETUP-FLAG NUM-CORES
 ```
-Note that the hypergraph data is stored using zero-indexing, unlike most of the examples included in previous notebooks, so keep that in mind when choosing a SOURCE node and a TARGET node. Moreover, if running a query on a dataset you already use, make sure to make SETUP-FLAG false in order to avoid issues in how the files are stored (currently, it seems like they don't get overwritten).
-
-
-# PathGES: An Efficient and Secure Graph Encryption Scheme for Shortest Path Queries
-
-This is the associated artifact for the paper "PathGES: An Efficient and Secure Graph Encryption Scheme for Shortest Path Queries" by Francesca Falzon, Esha Ghosh, Kenneth G. Paterson, and Roberto Tamassia.
-
-**Important:** This repository implements several cryptographic primitives (used for research purposes) which should not be used in production.
+Note that the hypergraph data is stored using zero-indexing, unlike most of the examples included in previous notebooks, 
+so keep that in mind when choosing a SOURCE node and a TARGET node. Moreover, if running a query on a dataset you already 
+use, make sure to make SETUP-FLAG false in order to avoid issues in how the files are stored (currently, it seems like 
+they don't get overwritten).
 
 ## Detailed Usage
 
